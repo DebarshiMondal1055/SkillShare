@@ -5,6 +5,7 @@ import Home from './Pages/Home.jsx'
 import Video from './Pages/Video/Video.jsx';
 import { Outlet } from "react-router";
 import UserProfile from './Pages/UserProfile/UserProfile.jsx';
+import VideoUpload from './Pages/VideoUpload/VideoUpload.jsx';
 
 
 
@@ -18,9 +19,6 @@ function App() {
   return (
     <>
       <Navbar toggleSideNavbar={toggleSideNavbar}/>
-      {/* <UserProfile showSideNavbar={showSideNavbar}/> */}
-      
-      
       <Outlet context={{showSideNavbar}}/>
     </>
   )

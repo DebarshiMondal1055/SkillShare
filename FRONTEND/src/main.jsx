@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Home from './Pages/Home.jsx'
 import Video from './Pages/Video/Video.jsx'
 import UserProfile from './Pages/UserProfile/UserProfile.jsx'
+import VideoUpload from './Pages/VideoUpload/VideoUpload.jsx'
 
 const router=createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router=createBrowserRouter([
       {
         path:'users/:username',
         element:<UserProfile/>
+      },
+      {
+        path:':userId/upload',
+        element:<VideoUpload/>
       }
     ]
   }

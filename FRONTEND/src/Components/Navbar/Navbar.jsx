@@ -4,6 +4,7 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 import SearchIcon from '@mui/icons-material/Search';
 import MicNoneIcon from '@mui/icons-material/MicNone';
 import PublishIcon from '@mui/icons-material/Publish';
+import { Link } from 'react-router-dom';
 const Navbar = ({toggleSideNavbar}) => {
 
     const toggle=()=>{
@@ -39,9 +40,11 @@ const Navbar = ({toggleSideNavbar}) => {
         </div>
         {/* nabar-middle ends */}
         <div className='flex gap-6 justify-center items-center'>
-            <div>
+
+            <Link to={"/453/upload"}>
                 <PublishIcon sx={{color:"white",fontSize:"28px"}}/>
-            </div>
+            </Link>        
+ 
             <div>
                 <button className='h-[38px] px-4 bg-emerald-600 rounded-xl'>Login</button>
             </div>
