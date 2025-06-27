@@ -6,6 +6,8 @@ import Video from './Pages/Video/Video.jsx';
 import { Outlet } from "react-router";
 import UserProfile from './Pages/UserProfile/UserProfile.jsx';
 import VideoUpload from './Pages/VideoUpload/VideoUpload.jsx';
+import Login from './Pages/Login/Login.jsx';
+import SignUp from './Pages/SignUp/SignUp.jsx';
 
 
 

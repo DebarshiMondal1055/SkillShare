@@ -22,7 +22,7 @@ const HomePage = ({showSideNavbar}) => {
   return (
     <div className={`flex flex-col ${showSideNavbar ? 'ml-[280px]' : 'ml-0'} bg-black top-[64px] min-h-[92vh] w-full overflow-x-hidden`}>
         <div id='homePage-options' className='flex items-center gap-2 overflow-x-auto whitespace-nowrap
-                z-10 fixed box-border px-3 py-3 w-full bg-black '>
+                z-[5] fixed box-border px-3 py-3 w-full bg-black '>
             <div className='text-white flex  h-[30px] bg-[#4c4c4c] text-lg hover:bg-[#4e535b]
                           justify-center items-center px-2 py-1.5 rounded-xl cursor-pointer border-2 border-white'>
                 All

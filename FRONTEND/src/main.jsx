@@ -7,6 +7,8 @@ import Home from './Pages/Home.jsx'
 import Video from './Pages/Video/Video.jsx'
 import UserProfile from './Pages/UserProfile/UserProfile.jsx'
 import VideoUpload from './Pages/VideoUpload/VideoUpload.jsx'
+import Login from './Pages/Login/Login.jsx'
+import SignUp from './Pages/SignUp/SignUp.jsx'
 
 const router=createBrowserRouter([
   {
@@ -28,6 +30,14 @@ const router=createBrowserRouter([
       {
         path:':userId/upload',
         element:<VideoUpload/>
+      },
+      {
+        path:'login',
+        element:<Login/>
+      },
+      {
+        path:'register',
+        element:<SignUp/>
       }
     ]
   }
