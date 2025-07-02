@@ -1,6 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 const Login = () => {
+    const [username,setUsername]=useState("");
+    const [email,setEmail]=useState("");
+    const [password,setPassword]=useState("");
   return (
     <div className='flex w-full mt-[60px] justify-center items-center box-border h-[92vh] text-white bg-black '>
         <div style={{ boxShadow: '0.5px -0.5px 8px blue, 0.5px 0.5px 8px white' }}
@@ -10,12 +13,13 @@ const Login = () => {
                 Login
             </div>
             <div className='mt-[25px] flex flex-col gap-[35px] items-center text-zinc-800'>
-                <input type="text" className='bg-white w-[70%] h-[36px] placeholder:text-gray-400 rounded-2xl px-6 py-4 focus:outline-none'
+                <input type="text" value={username} onChange={(e)=>{setUsername(e.target.value)}}
+                className='bg-white w-[70%] h-[36px] placeholder:text-gray-400 rounded-2xl px-6 py-4 focus:outline-none'
                 placeholder='Username'/>
                 <input type="text" className='bg-white w-[70%] h-[36px] rounded-2xl px-6 py-4  placeholder:text-gray-400 focus:outline-none' 
-                placeholder='email' />
+                placeholder='email' value={email} onChange={(e)=>{setEmail(e.target.value)}} />
                 <input type="password" className='bg-white w-[70%] h-[36px] rounded-2xl px-6 py-4 focus:outline-none  placeholder:text-gray-400' 
-                name="" id="" placeholder='password'/>
+                name="" id="" placeholder='password' value={password} onChange={(e)=>{setPassword(e.target.value)}}/>
             </div>
             <div className='flex flex-col gap-[15px] items-center mt-[15px] '>
                 <button className='p-[10px] rounded-3xl bg-emerald-500 w-[30%] cursor-pointer'>Sign In</button>

@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShareIcon from '@mui/icons-material/Share';
 const VideoPage = ({showSideNavbar}) => {
-  return (
+    const [commentDescription,setcommentDescription]=useState("")
+    return (
     <>
     <div className={`flex w-full bg-black box-border py-12 pl-4 justify-center ${showSideNavbar ? 'ml-[280px]' : ''}`}>
 
@@ -95,7 +96,9 @@ const VideoPage = ({showSideNavbar}) => {
                 src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750144010/j3pjds8ewozwhtczqnve.jpg" alt="" />
             <div className='w-[80%] flex border-b-2  border-b-gray-300'>
                     <input  className='bg-black h-[42px] focus:outline-none w-full
-                    border-none text-white text-[18px]' type="text" name="" id="" placeholder='Add a comment'/>
+                    border-none text-white text-[18px]'
+                    value={commentDescription} onChange={(e)=>setcommentDescription(e.target.value)}
+                    type="text" name="" id="" placeholder='Add a comment'/>
                     
             </div>
             <button className='h-[42px] w-[20%] text-white bg-[#212121] text-lg hover:bg-[#6b737a] rounded-3xl px-4 py-2'>Add</button>

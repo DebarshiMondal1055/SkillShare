@@ -56,7 +56,9 @@ const Navbar = ({toggleSideNavbar}) => {
                     <div className='absolute top-[40px] right-[30px] w-full z-50  text-gray-200 '>
                     <div onClick={()=>setShowModalOptions(!showModalOptions)} 
                     className='bg-[rgb(85,85,85)] cursor-pointer p-[10px]  hover:bg-[rgb(35,35,35)]'>
-                        <Link to={"/login"}>
+                        <Link to={"/login"} 
+                            
+                            >
                             Log In
                         </Link>
                     </div>

@@ -1,7 +1,31 @@
-import React from 'react'
+import { avatarClasses } from '@mui/material/Avatar';
+import axios from 'axios';
+import React, { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom';
 const VideoUpload = () => {
     const navigate=useNavigate()
+    const [videoTitle,setVideoTitle]=useState("");
+    const [description,setDescription]=useState("");
+    const [category,setCategory]=useState("");
+    const [video,setVideo]=useState(null);
+    const [thumbnail,setThumbnail]=useState(null);
+    const submitHandler=()=>{
+        if(!videoTitle || !description || !category || !video || !thumbnail){
+            alert("Required fields not filled")
+            return;
+        } 
+        
+        const formdata=new FormData();
+        formdata.append("title",videoTitle);
+        formdata.append("description",description);
+        formdata.append("category",category)
+        formdata.append("videoFile",video)
+        formdata.append("thumbnail",thumbnail);        
+        axios.post("/api/v1/videos/uploadVideo",
+            formdata,{withCredentials:true})
+            .then((response)=>{console.log(response.data)})
+            .catch((error)=>{console.log(error)})
+    }
   return (
     <div className='flex w-full mt-[60px] justify-center items-center box-border h-[92vh] text-white bg-black '>
         <div style={{ boxShadow: '0.5px 0.5px 8px white' }} 
@@ -10,30 +34,37 @@ const VideoUpload = () => {
                 Upload
             </div>
             <div className='flex flex-col gap-6 mt-[25px] items-center'>
-                <input type="text" placeholder='Video title' 
+                <input type="text" placeholder='Video title' value={videoTitle}
+                    onChange={(e)=>setVideoTitle(e.target.value)}
                     className='w-[70%] h-[42px] px-4 py-2 placeholder:text-gray-200 placeholder:font-medium bg-gray-400 rounded-2xl focus:outline-none box-border '
                 />
-            <textarea className='bg-gray-400 focus:outine-none px-4 py-2 placeholder:text-gray-200 placeholder:font-medium box-border w-[70%] h-35 rounded-2xl text-gray-200'
-            name="" id=""  placeholder='Description' ></textarea>
+            <textarea className='bg-gray-400 focus:outline-none px-4 py-2 placeholder:text-gray-200 placeholder:font-medium box-border w-[70%] h-35 rounded-2xl text-gray-200'
+            name="" id=""  placeholder='Description' 
+                value={description} onChange={(e)=>setDescription(e.target.value)}
+            ></textarea>
                 <input type="text" 
                 className='w-[70%] h-[42px] px-4 py-2 focus:outine-none placeholder:text-gray-200 placeholder:font-medium bg-gray-400 rounded-2xl focus:outline-none box-border '              
-                placeholder='Category'/>    
+                placeholder='Category'
+                    value={category} onChange={(e)=>setCategory(e.target.value)}
+                />    
                 <div className='flex w-full justify-center gap-4 text-[#b9cbcb]  '>
-                        <label htmlFor="videoFile" className='cursor-pointer border-b-1 border-b-gray-300'>Choose Video</label>
+                        <label htmlFor="videoFile" className='cursor-pointer border-b-1 border-b-gray-300'>
+                            {video?.name ||"Choose Video"}</label>
                         <input type="file" name="videoFile" id="videoFile" accept='video/mp4,video/webm,video/*'
-                            className='hidden '
+                            className='hidden '  onChange={(e)=>setVideo(e.target.files[0])}
                         />
 
                         <label htmlFor="thumbnailFile"
                             className='cursor-pointer border-b-1 border-b-gray-300'
-                        >Choose Thumbnail</label>
-                        <input type="file" name="thumbnailFile" id="thumbnailFile" accept='images'
-                            className=' hidden '
+                        >{thumbnail?.name ||"Choose Thumbnail"}</label>
+                        <input type="file" name="thumbnailFile" id="thumbnailFile" accept='image/*'
+                            className=' hidden '  onChange={(e)=>setThumbnail(e.target.files[0])}
                         />
                 </div>
             </div>
                     <div className='w-full justify-center mt-8 flex gap-20 text-white'>
-                        <button className='bg-emerald-400 px-4 py-2 rounded-3xl font-medium hover:bg-emerald-700 cursor-pointer '>
+                        <button onClick={submitHandler}
+                         className='bg-emerald-400 px-4 py-2 rounded-3xl font-medium hover:bg-emerald-700 cursor-pointer '>
                             Upload
                         </button>
                         <button
