@@ -1,9 +1,23 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link ,useNavigate} from 'react-router-dom';
+import axios from 'axios'
 const Login = () => {
     const [username,setUsername]=useState("");
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
+    const navigate=useNavigate();
+    const loginHandler=()=>{
+        const data={username,email,password};
+        axios.post("/api/v1/users/login",data,{withCredentials:true}) //Credentials true ensures cookies are saved in the browser..
+        .then((response)=>{
+            if(response.status===201){
+                const username=response.data.data.user.username;
+                navigate(`/users/${username}`);
+            }
+            console.log(response.data)
+        })
+        .catch((error)=>{console.log(error)})
+    }
   return (
     <div className='flex w-full mt-[60px] justify-center items-center box-border h-[92vh] text-white bg-black '>
         <div style={{ boxShadow: '0.5px -0.5px 8px blue, 0.5px 0.5px 8px white' }}
@@ -22,7 +36,7 @@ const Login = () => {
                 name="" id="" placeholder='password' value={password} onChange={(e)=>{setPassword(e.target.value)}}/>
             </div>
             <div className='flex flex-col gap-[15px] items-center mt-[15px] '>
-                <button className='p-[10px] rounded-3xl bg-emerald-500 w-[30%] cursor-pointer'>Sign In</button>
+                <button onClick={loginHandler} className='p-[10px] flex justify-center text-xl rounded-3xl bg-emerald-500 w-[30%] cursor-pointer'>Sign In</button>
                 <Link to={"/register"} className='flex justify-center border-b-2 border-b-gray-400'>Don't have an account?Sign Up</Link>
             </div>
         </div>

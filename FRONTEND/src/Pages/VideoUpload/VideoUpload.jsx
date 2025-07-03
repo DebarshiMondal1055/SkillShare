@@ -9,23 +9,35 @@ const VideoUpload = () => {
     const [category,setCategory]=useState("");
     const [video,setVideo]=useState(null);
     const [thumbnail,setThumbnail]=useState(null);
-    const submitHandler=()=>{
-        if(!videoTitle || !description || !category || !video || !thumbnail){
-            alert("Required fields not filled")
-            return;
-        } 
-        
-        const formdata=new FormData();
-        formdata.append("title",videoTitle);
-        formdata.append("description",description);
-        formdata.append("category",category)
-        formdata.append("videoFile",video)
-        formdata.append("thumbnail",thumbnail);        
-        axios.post("/api/v1/videos/uploadVideo",
-            formdata,{withCredentials:true})
-            .then((response)=>{console.log(response.data)})
-            .catch((error)=>{console.log(error)})
+const submitHandler = async () => {
+    if (!videoTitle || !description || !category || !video || !thumbnail) {
+        alert("Required fields not filled");
+        return;
     }
+
+    const formdata = new FormData();
+    formdata.append("title", videoTitle);
+    formdata.append("description", description);
+    formdata.append("category", category);
+    formdata.append("videoFile", video);
+    formdata.append("thumbnail", thumbnail);
+
+    try {
+        const response = await axios.post(
+            "/api/v1/videos/uploadVideo",
+            formdata,
+            {
+                withCredentials: true,
+            }
+        );
+
+        console.log("Upload success:", response.data);
+    } catch (error) {
+        console.error("Upload failed:", error.response?.data);
+
+    }
+};
+
   return (
     <div className='flex w-full mt-[60px] justify-center items-center box-border h-[92vh] text-white bg-black '>
         <div style={{ boxShadow: '0.5px 0.5px 8px white' }} 
