@@ -1,10 +1,62 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
-import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShareIcon from '@mui/icons-material/Share';
+import { useParams } from 'react-router-dom';
+import { useCustomGetRequest } from '../../Hooks/customGetReactQuery';
+import axios from 'axios';
 const VideoPage = ({showSideNavbar}) => {
     const [commentDescription,setcommentDescription]=useState("")
+    
+    const {videoId}=useParams();
+    
+    const [data,error,loading]=useCustomGetRequest(`/api/v1/videos/v/${videoId}`);
+    
+    const [commentsData,commentError,commentsLoading]=useCustomGetRequest(`/api/v1/comments/v/${videoId}`);
+    
+    const [comments,setComments]=useState([]);
+
+    const [addLoading,setAddLoading]=useState(false);
+    
+    useEffect(() => {
+        if (commentsData?.comments) {
+            setComments(commentsData.comments);
+        }
+    }, [commentsData]);
+    
+    if (loading) {
+            return (
+                <div className="w-full h-screen flex justify-center items-center bg-black text-white text-2xl">
+                Loading video...
+                </div>
+            );
+        }
+    if(commentsLoading){
+            return (
+                <div className="w-full h-screen flex justify-center items-center bg-black text-white text-2xl">
+                Comments Loading ...
+                </div>
+            );     
+    }
+    const addCommentHandler=async()=>{
+        try {
+            setAddLoading(true)
+            const response=await axios.post(`/api/v1/comments/${videoId}`,
+                {content:commentDescription})
+            const addedComment=response.data.data;
+            setComments((prev)=>([addedComment,...prev]))
+            setAddLoading(false);
+            setcommentDescription("");
+        } catch (error) {
+            setAddLoading(false)
+            console.error(error);
+        }
+
+    }
+    
+    
+    const days=Math.floor((Date.now()-new Date(data?.createdAt).getTime())/86400000);
+    const years=Math.floor(days/365);
     return (
     <>
     <div className={`flex w-full bg-black box-border py-12 pl-4 justify-center ${showSideNavbar ? 'ml-[280px]' : ''}`}>
@@ -17,15 +69,15 @@ const VideoPage = ({showSideNavbar}) => {
                 
                 <source 
                     type='video/mp4'
-                    src='https://res.cloudinary.com/deeccmrzc/video/upload/v1750143715/ahf71bc181nkg2gbxu5k.mp4'/>
+                    src={data?.videoFile}/>
                 <source type='video/webm'
-                    src='https://res.cloudinary.com/deeccmrzc/video/upload/v1750143715/ahf71bc181nkg2gbxu5k.mp4'/>
+                    src={data?.videoFile}/>
                 Your Browser does not support the video tag
             </video>
         </div>
         <div className='flex flex-col text-white px-2 font-bold text-2xl '>
             <div>
-                Rainy Day Video Animation Lesson 1
+                {data?.title}
             </div>
 
         </div>
@@ -33,12 +85,12 @@ const VideoPage = ({showSideNavbar}) => {
                 <div className='flex gap-4'>
                     <div className='w-[45px] h-[45px] cursor-pointer'>
                         <img className='rounded-full w-full h-full' 
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1749487214/gh5gpj14rqpugcvsgnu3.jpg" alt="" />
+                        src={data?.owner.avatar} alt="" />
                     </div>
                     <div className='flex flex-col  '>
-                        <h3 className='font-bold text-ls cursor-pointer'>Bumblebee</h3>
+                        <h3 className='font-bold text-ls cursor-pointer'>{data?.owner.username}</h3>
                         <div className='text-gray-400'>
-                            14 Subscribers
+                            {data?.subcribersCount} Subscribers
                         </div>
                     </div>
                     <div className='flex items-center'>
@@ -53,12 +105,7 @@ const VideoPage = ({showSideNavbar}) => {
                             <ThumbUpOffAltIcon/>
                         </div>
                         <div className='text-white'>
-                            10 Likes
-                        </div>
-                    </div>
-                    <div className='justify-center hover:bg-gray-500 items-center px-[10px] py-[10px] box-border rounded-2xl bg-[#212121]'>
-                        <div className='cursor-pointer'>
-                                <ThumbDownOffAltIcon/>
+                            {data?.likesCount} Likes
                         </div>
                     </div>
                     <div className='justify-center hover:bg-gray-500 items-center px-[10px] py-[10px] box-border rounded-2xl bg-[#212121]'>
@@ -79,155 +126,65 @@ const VideoPage = ({showSideNavbar}) => {
         <div className='flex flex-col mt-4 w-full rounded-2xl bg-[#313131] px-4 py-2 text-white'>
             <div className='flex gap-4'>
                  <div>
-                    40 Views
+                    {data?.views} Views
                  </div>
                  <div>
-                    2 days ago
+                    {years>0?years:days} {years>0?"years":"days"} ago
                  </div>
             </div>
             <div className='mt-2'>
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Id aut ad autem eaque vero quas vitae quasi assumenda facere? Iure beatae aspernatur quisquam ullam architecto?</p>
+                <p>{data?.description}</p>
             </div>
         </div>
         <div className='flex flex-col text-white mt-4 w-full'>
-            <h1 className='text-2xl font-medium'>5 Comments</h1>
+            <h1 className='text-2xl font-medium'>{comments?.length} Comments</h1>
             <div className='flex gap-2 mt-[10px]'>
                 <img className='h-[42px] w-[42px] rounded-full' 
-                src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750144010/j3pjds8ewozwhtczqnve.jpg" alt="" />
+                src={data?.owner.avatar} alt="" />
             <div className='w-[80%] flex border-b-2  border-b-gray-300'>
                     <input  className='bg-black h-[42px] focus:outline-none w-full
                     border-none text-white text-[18px]'
-                    value={commentDescription} onChange={(e)=>setcommentDescription(e.target.value)}
+                    value={commentDescription} 
+                    onChange={(e)=>setcommentDescription(e.target.value)}
                     type="text" name="" id="" placeholder='Add a comment'/>
                     
             </div>
-            <button className='h-[42px] w-[20%] text-white bg-[#212121] text-lg hover:bg-[#6b737a] rounded-3xl px-4 py-2'>Add</button>
+            <button onClick={addCommentHandler}  disabled={addLoading || commentDescription===""}
+            className='h-[42px] cursor-pointer w-[20%] text-white bg-[#212121] text-lg hover:bg-[#6b737a] rounded-3xl px-4 py-2'>Add</button>
             </div>
-            <div className='mt-10 flex justify-between text-white w-full'>
-                <div className='flex  gap-4'>
-                    <div className='flex gap-2 justify-center items-center cursor-pointer'>
-                        <img className='h-[42px] w-[42px] rounded-full' 
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750144010/j3pjds8ewozwhtczqnve.jpg" alt="" />
-                    </div> 
-                    <div className='flex flex-col gap-2'>
-                        <div className='flex gap-2'>
-                            <div className='font-bold cursor-pointer'>
-                                Risi Mondal
+            
+            {comments?.map((comment,index)=>{
+                const days=Math.floor((Date.now()-new Date(comment.createdAt).getTime())/86400000);
+                const years=Math.floor(days/365);
+                return  <div key={index} className='mt-10 flex justify-between text-white w-full'>
+                            <div className='flex  gap-4'>
+                                <div className='flex gap-2 justify-center items-center cursor-pointer'>
+                                    <img className='h-[42px] w-[42px] rounded-full' 
+                                    src={comment.owner.avatar} alt="" />
+                                </div> 
+                                <div className='flex flex-col gap-2'>
+                                    <div className='flex gap-2'>
+                                        <div className='font-bold cursor-pointer'>
+                                            {comment.owner.username}
+                                        </div>
+                                        <div className='text-gray-400 font-light '>
+                                            {years>0?years:days} {years>0?"years":"days"} ago
+                                        </div>
+                                    </div>
+                                    <div>
+                                    {comment.content}
+                                    </div>
+                                </div>
                             </div>
-                            <div className='text-gray-400 font-light '>
-                                1 day ago
+                            <div className='flex gap-2 cursor-pointer'>
+                                <ThumbUpOffAltIcon/>
+                                <div>{comment.likeCount} Likes</div>
                             </div>
-                        </div>
-                         <div>
-                        Wondefull video...!!!
-                        </div>
-                    </div>
-                </div>
-                <div className='flex gap-2 cursor-pointer'>
-                    <ThumbUpOffAltIcon/>
-                    <div>3 Likes</div>
-                </div>
-            </div>
-            <div className='mt-10 flex justify-between text-white w-full'>
-                <div className='flex  gap-4'>
-                    <div className='flex gap-2 justify-center items-center cursor-pointer'>
-                        <img className='h-[42px] w-[42px] rounded-full' 
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750144010/j3pjds8ewozwhtczqnve.jpg" alt="" />
-                    </div> 
-                    <div className='flex flex-col gap-2'>
-                        <div className='flex gap-2'>
-                            <div className='font-bold cursor-pointer'>
-                                Risi Mondal
-                            </div>
-                            <div className='text-gray-400 font-light '>
-                                1 day ago
-                            </div>
-                        </div>
-                         <div>
-                        Wondefull video...!!!
-                        </div>
-                    </div>
-                </div>
-                <div className='flex gap-2 cursor-pointer'>
-                    <ThumbUpOffAltIcon/>
-                    <div>3 Likes</div>
-                </div>
-            </div>
-            <div className='mt-10 flex justify-between text-white w-full'>
-                <div className='flex  gap-4'>
-                    <div className='flex gap-2 justify-center items-center cursor-pointer'>
-                        <img className='h-[42px] w-[42px] rounded-full' 
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750144010/j3pjds8ewozwhtczqnve.jpg" alt="" />
-                    </div> 
-                    <div className='flex flex-col gap-2'>
-                        <div className='flex gap-2'>
-                            <div className='font-bold cursor-pointer'>
-                                Risi Mondal
-                            </div>
-                            <div className='text-gray-400 font-light '>
-                                1 day ago
-                            </div>
-                        </div>
-                         <div>
-                        Wondefull video...!!!
-                        </div>
-                    </div>
-                </div>
-                <div className='flex gap-2 cursor-pointer'>
-                    <ThumbUpOffAltIcon/>
-                    <div>3 Likes</div>
-                </div>
-            </div>
-            <div className='mt-10 flex justify-between text-white w-full'>
-                <div className='flex  gap-4'>
-                    <div className='flex gap-2 justify-center items-center cursor-pointer'>
-                        <img className='h-[42px] w-[42px] rounded-full' 
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750144010/j3pjds8ewozwhtczqnve.jpg" alt="" />
-                    </div> 
-                    <div className='flex flex-col gap-2'>
-                        <div className='flex gap-2'>
-                            <div className='font-bold cursor-pointer'>
-                                Risi Mondal
-                            </div>
-                            <div className='text-gray-400 font-light '>
-                                1 day ago
-                            </div>
-                        </div>
-                         <div>
-                        Wondefull video...!!!
-                        </div>
-                    </div>
-                </div>
-                <div className='flex gap-2 cursor-pointer'>
-                    <ThumbUpOffAltIcon/>
-                    <div>3 Likes</div>
-                </div>
-            </div>
-            <div className='mt-10 flex justify-between text-white w-full'>
-                <div className='flex  gap-4'>
-                    <div className='flex gap-2 justify-center items-center cursor-pointer'>
-                        <img className='h-[42px] w-[42px] rounded-full' 
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750144010/j3pjds8ewozwhtczqnve.jpg" alt="" />
-                    </div> 
-                    <div className='flex flex-col gap-2'>
-                        <div className='flex gap-2'>
-                            <div className='font-bold cursor-pointer'>
-                                Risi Mondal
-                            </div>
-                            <div className='text-gray-400 font-light '>
-                                1 day ago
-                            </div>
-                        </div>
-                         <div>
-                        Wondefull video...!!!
-                        </div>
-                    </div>
-                </div>
-                <div className='flex gap-2 cursor-pointer'>
-                    <ThumbUpOffAltIcon/>
-                    <div>3 Likes</div>
-                </div>
-            </div>
+                </div> 
+            })}
+            
+               
+
         </div>
       </div>
 

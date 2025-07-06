@@ -6,6 +6,7 @@ import { Link, useParams } from 'react-router-dom'
 const UserProfilePage = ({showSideNavbar}) => {
     const {username}=useParams();
     const [userData,setUserData]=useState({});
+    const [videos,setVideos]=useState([]);
     useEffect(() => {
         const fetchUserData = async () => {
         try {
@@ -13,7 +14,7 @@ const UserProfilePage = ({showSideNavbar}) => {
             withCredentials: true
             });
             setUserData(response.data.data);
-            } catch (error) {
+        } catch (error) {
             console.error(error?.response?.data?.message || error.message);
         }
         };
@@ -32,7 +33,24 @@ const UserProfilePage = ({showSideNavbar}) => {
 
     }
     
-    const [videos,setVideos]=useState([]);
+
+
+    useEffect(()=>{
+        const fetchVideoDetails=async()=>{
+            try {
+                if(!_id) return;
+                const response=await axios.get(`/api/v1/videos/${_id}`,
+                    {withCredentials:true})
+                
+                setVideos(response.data.data)
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchVideoDetails()
+    },[_id])
+
+    
     return (
     <div className={`flex flex-col gap-4 ${showSideNavbar ? 'ml-[280px]' : 'ml-0'} bg-black py-4 px-4 text-white min-h-[92vh] w-full overflow-x-hidden `}>
         <div className='w-full flex justify-center h-[300px] mt-2 '>
@@ -78,78 +96,23 @@ const UserProfilePage = ({showSideNavbar}) => {
         </div>
         <div className=' mt-2 w-full flex justify-center '>
             <div className=' flex flex-wrap gap-[20px]   w-[70%] '>
-                <Link to={"/watch/326"} className=' flex flex-col gap-2 w-[240px]  cursor-pointer text-white'>
-                    <div className='w-full h-[150px]'>
-                        <img className='w-full h-full '
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143917/iidwovezs1kavffx6mle.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col gap-1 w-full'>
-                        <p className='font-bold text-lg'>The is the video description</p>
-                        <div className='text-gray-400 font-light'>
-                            20 views ~ 2 days ago
+                {videos.map((video,index)=>{
+                    const days=Math.floor((Date.now()-new Date(video.createdAt).getTime())/86400000);
+                    const years=Math.floor(days/365);
+                    return <Link key={index} to={`/watch/${video._id}`} className=' flex flex-col gap-2 w-[240px]  cursor-pointer text-white'>
+                        <div className='w-full h-[150px]'>
+                            <img className='w-full h-full rounded-lg '
+                            src={video.thumbnail} alt="" />
                         </div>
-                    </div>
-                </Link>
-                <Link to={"/watch/326"} className=' flex flex-col gap-2 w-[240px]  cursor-pointer text-white '>
-                    <div className='w-full h-[150px]'>
-                        <img className='w-full h-full '
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143917/iidwovezs1kavffx6mle.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col gap-1 w-full2'>
-                        <p className='font-bold text-lg'>The is the video description</p>
-                        <div className='text-gray-400 font-light'>
-                            20 views ~ 2 days ago
+                        <div className='flex flex-col gap-1 w-full'>
+                            <p className='font-medium text-md'>{video.title}</p>
+                            <div className='text-gray-400 font-light'>
+                                {video.views} views ~ {years>0?years:days} {years>0?"years":"days"} ago
+                            </div>
                         </div>
-                    </div>
-                </Link>
-                <Link to={"/watch/326"} className=' flex flex-col gap-2 w-[240px]  cursor-pointer text-white'>
-                    <div className='w-full h-[150px]'>
-                        <img className='w-full h-full '
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143917/iidwovezs1kavffx6mle.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col gap-1 w-full'>
-                        <p className='font-bold text-lg'>The is the video description</p>
-                        <div className='text-gray-400 font-light'>
-                            20 views ~ 2 days ago
-                        </div>
-                    </div>
-                </Link>
-                <Link to={"/watch/326"} className=' flex flex-col gap-2 w-[240px]  cursor-pointer text-white'>
-                    <div className='w-full h-[150px]'>
-                        <img className='w-full h-full '
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143917/iidwovezs1kavffx6mle.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col gap-1 w-full'>
-                        <p className='font-bold text-lg'>The is the video description</p>
-                        <div className='text-gray-400 font-light'>
-                            20 views ~ 2 days ago
-                        </div>
-                    </div>
-                </Link>
-                <Link to={"/watch/326"} className=' flex flex-col gap-2 w-[240px]  cursor-pointer text-white'>
-                    <div className='w-full h-[150px]'>
-                        <img className='w-full h-full '
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143917/iidwovezs1kavffx6mle.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col gap-1 w-full'>
-                        <p className='font-bold text-lg'>The is the video description</p>
-                        <div className='text-gray-400 font-light'>
-                            20 views ~ 2 days ago
-                        </div>
-                    </div>
-                </Link>
-                <Link to={"/watch/326"} className=' flex flex-col gap-2 w-[240px]  cursor-pointer text-white'>
-                    <div className='w-full h-[150px]'>
-                        <img className='w-full h-full '
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143917/iidwovezs1kavffx6mle.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col gap-1 w-full'>
-                        <p className='font-bold text-lg'>The is the video description</p>
-                        <div className='text-gray-400 font-light'>
-                            20 views ~ 2 days ago
-                        </div>
-                    </div>
-                </Link>
+                    </Link>}
+                )}
+                
 
         </div>
         </div>
