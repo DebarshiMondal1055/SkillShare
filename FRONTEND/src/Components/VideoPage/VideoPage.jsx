@@ -5,24 +5,28 @@ import ShareIcon from '@mui/icons-material/Share';
 import { useParams } from 'react-router-dom';
 import { useCustomGetRequest } from '../../Hooks/customGetReactQuery';
 import axios from 'axios';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 const VideoPage = ({showSideNavbar}) => {
+    const queryClient=useQueryClient()  //initialise the client provided by QueryClientProvider
     const [commentDescription,setcommentDescription]=useState("")
-    
     const {videoId}=useParams();
-    
-    const [data,error,loading]=useCustomGetRequest(`/api/v1/videos/v/${videoId}`);
-    
-    const [commentsData,commentError,commentsLoading]=useCustomGetRequest(`/api/v1/comments/v/${videoId}`);
-    
-    const [comments,setComments]=useState([]);
 
-    const [addLoading,setAddLoading]=useState(false);
-    
-    useEffect(() => {
-        if (commentsData?.comments) {
-            setComments(commentsData.comments);
+    const {data,error,isLoading:loading}=useQuery({
+        queryKey:['video',videoId],
+        queryFn:async()=>{
+            const response=await axios.get(`/api/v1/videos/v/${videoId}`);
+            return (response.status>=200 && response.status<300)?response.data.data:null;
         }
-    }, [commentsData]);
+    })
+
+
+    const {data:commentsData,isLoading:commentsLoading,isError,error:commentError}=useQuery({
+        queryKey:['comments',videoId],
+        queryFn:async()=>{
+            const response= await axios.get(`/api/v1/comments/v/${videoId}`)
+            return response.data.data
+        }
+    })
     
     if (loading) {
             return (
@@ -38,20 +42,39 @@ const VideoPage = ({showSideNavbar}) => {
                 </div>
             );     
     }
+    
+    
     const addCommentHandler=async()=>{
         try {
-            setAddLoading(true)
             const response=await axios.post(`/api/v1/comments/${videoId}`,
-                {content:commentDescription})
-            const addedComment=response.data.data;
-            setComments((prev)=>([addedComment,...prev]))
-            setAddLoading(false);
+                {content:commentDescription});
+            console.log(response.data.data)
+            queryClient.invalidateQueries(['comments',videoId]);
             setcommentDescription("");
         } catch (error) {
-            setAddLoading(false)
             console.error(error);
         }
 
+    }
+
+    const toggleSubscribe=async ()=>{
+        try {
+            const response = await axios.post(`/api/v1/subscriptions/c/${data?.owner._id}`, {}, { withCredentials: true });
+            const {isSubscribed,subscriptionCount}=response.data.data;
+            queryClient.setQueryData(['video',videoId],(prev)=>({...prev,isSubcribed:isSubscribed,subcribersCount:subscriptionCount}))
+        } catch (error) {
+            console.error(error);
+        }
+
+    }
+
+    const toggleLike=async()=>{
+        try{
+            const response =await axios.post(`/api/v1/likes/toggle/v/${videoId}`,{},{withCredentials:true});
+            console.log(response.data.data);
+        }catch(error){
+            console.error(error)
+        }
     }
     
     
@@ -94,13 +117,14 @@ const VideoPage = ({showSideNavbar}) => {
                         </div>
                     </div>
                     <div className='flex items-center'>
-                        <button
+                        <button onClick={toggleSubscribe}
                             className='rounded-full  bg-red-600 px-4 py-2  text-lg cursor-pointer hover:bg-red-400'
-                        >Subscribe</button>
+                        >{data.isSubcribed?"Unsubscribe":"Subscribe"}</button>
                     </div>
                 </div>
                 <div className='flex gap-2   '>
-                    <div className='flex hover:bg-gray-500 cursor-pointer gap-2 justify-center items-center px-[10px] py-[10px] box-border rounded-2xl bg-[#212121]'>
+                    <div onClick={toggleLike}
+                        className='flex hover:bg-gray-500 cursor-pointer gap-2 justify-center items-center px-[10px] py-[10px] box-border rounded-2xl bg-[#212121]'>
                         <div className=''>
                             <ThumbUpOffAltIcon/>
                         </div>
@@ -137,7 +161,7 @@ const VideoPage = ({showSideNavbar}) => {
             </div>
         </div>
         <div className='flex flex-col text-white mt-4 w-full'>
-            <h1 className='text-2xl font-medium'>{comments?.length} Comments</h1>
+            <h1 className='text-2xl font-medium'>{commentsData?.comments.length} Comments</h1>
             <div className='flex gap-2 mt-[10px]'>
                 <img className='h-[42px] w-[42px] rounded-full' 
                 src={data?.owner.avatar} alt="" />
@@ -149,11 +173,11 @@ const VideoPage = ({showSideNavbar}) => {
                     type="text" name="" id="" placeholder='Add a comment'/>
                     
             </div>
-            <button onClick={addCommentHandler}  disabled={addLoading || commentDescription===""}
+            <button onClick={addCommentHandler}  disabled={commentDescription===""}
             className='h-[42px] cursor-pointer w-[20%] text-white bg-[#212121] text-lg hover:bg-[#6b737a] rounded-3xl px-4 py-2'>Add</button>
             </div>
             
-            {comments?.map((comment,index)=>{
+            {commentsData?.comments?.map((comment,index)=>{
                 const days=Math.floor((Date.now()-new Date(comment.createdAt).getTime())/86400000);
                 const years=Math.floor(days/365);
                 return  <div key={index} className='mt-10 flex justify-between text-white w-full'>
