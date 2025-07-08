@@ -23,11 +23,11 @@ const SideNavbar = () => {
             <PersonIcon sx={{color:"white"}}/>
             <div className='text-white'>My Profile</div>
         </Link>
-        <div className='flex gap-4 px-4 py-2 items-center cursor-pointer
+        <Link to={'/history'} className='flex gap-4 px-4 py-2 items-center cursor-pointer
                          hover:bg-[#404040] rounded-[10px] border-white border-2'>
             <BrowseGalleryIcon sx={{color:"white"}}/>
-            <Link to={'/history'} className='text-white'>Watch History</Link>
-        </div>
+            <div className='text-white'>Watch History</div>
+        </Link>
         <div className='flex gap-4 px-4 py-2 items-center cursor-pointer
                          hover:bg-[#404040] rounded-[10px] border-white border-2'>
             <ThumbUpIcon sx={{color:"white"}}/>
