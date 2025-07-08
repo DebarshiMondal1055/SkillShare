@@ -8,18 +8,6 @@ const Login = () => {
     const [password,setPassword]=useState("");
     const navigate=useNavigate();
     const queryClient=useQueryClient();
-    // const loginHandler=()=>{
-    //     const data={username,email,password};
-    //     axios.post("/api/v1/users/login",data,{withCredentials:true}) //Credentials true ensures cookies are saved in the browser..
-    //     .then((response)=>{
-    //         if(response.status===201){
-    //             const username=response.data.data.user.username;
-    //             navigate(`/users/${username}`);
-    //         }
-    //         console.log(response.data)
-    //     })
-    //     .catch((error)=>{console.log(error)})
-    // }
 
     const loginMutation=useMutation({
         mutationFn:async()=>{

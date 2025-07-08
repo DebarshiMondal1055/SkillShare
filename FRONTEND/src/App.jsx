@@ -12,6 +12,7 @@ import WatchHistory from './Pages/WatchHistory/WatchHistory.jsx';
 import { AuthenticationContextProvider } from './Context/AuthenticationContext.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import Subscribers from './Pages/Subscribers/Subscribers.jsx';
 
 
 
@@ -47,6 +48,7 @@ function App() {
   return (
     <AuthenticationContextProvider value={{user:data}}>
       <Navbar toggleSideNavbar={toggleSideNavbar}/>
+      {/* <Subscribers showSideNavbar={showSideNavbar}/> */}
       <Outlet context={{showSideNavbar}}/>
     </AuthenticationContextProvider>
   )

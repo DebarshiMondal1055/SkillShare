@@ -12,6 +12,8 @@ import SignUp from './Pages/SignUp/SignUp.jsx'
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import WatchHistory from './Pages/WatchHistory/WatchHistory.jsx'
+import Subscribers from './Pages/Subscribers/Subscribers.jsx'
+import VideoLike from './Pages/VideoLikes/VideoLike.jsx'
 const router=createBrowserRouter([
   {
     path:'/',
@@ -44,6 +46,14 @@ const router=createBrowserRouter([
       {
         path:'history',
         element:<WatchHistory/>
+      },
+      {
+        path:'subscribers',
+        element:<Subscribers/>
+      },
+      {
+        path:'likedVideos',
+        element:<VideoLike/>
       }
     ]
   }

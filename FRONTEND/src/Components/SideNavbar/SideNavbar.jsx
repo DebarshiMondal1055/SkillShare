@@ -28,17 +28,17 @@ const SideNavbar = () => {
             <BrowseGalleryIcon sx={{color:"white"}}/>
             <div className='text-white'>Watch History</div>
         </Link>
-        <div className='flex gap-4 px-4 py-2 items-center cursor-pointer
+        <Link to={"/likedVideos"} className='flex gap-4 px-4 py-2 items-center cursor-pointer
                          hover:bg-[#404040] rounded-[10px] border-white border-2'>
             <ThumbUpIcon sx={{color:"white"}}/>
             <div className='text-white'>Liked Videos</div>
-        </div>
+        </Link>
         
-        <div className='flex gap-4 px-4 py-2 items-center cursor-pointer
+        <Link to={"/subscribers"} className='flex gap-4 px-4 py-2 items-center cursor-pointer
                          hover:bg-[#404040] rounded-[10px] border-white border-2'>
             <SupervisorAccountIcon sx={{color:"white"}}/>
             <div className='text-white'>Subscribers</div>
-        </div>
+        </Link>
         <div className='flex gap-4 px-4 py-2 items-center cursor-pointer
                          hover:bg-[#404040] rounded-[10px] border-white border-2'>
             <PermMediaIcon sx={{color:"white"}}/>
