@@ -5,7 +5,10 @@ import BrowseGalleryIcon from '@mui/icons-material/BrowseGallery';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import PermMediaIcon from '@mui/icons-material/PermMedia';
+import { Link } from 'react-router-dom';
+import { useAuthContext } from '../../Context/AuthenticationContext';
 const SideNavbar = () => {
+  const {user}=useAuthContext();
   return (
     <div className='flex flex-col gap-2 px-[14px] fixed overflow-y-auto box-border 
                 w-[280px] bg-black py-4 top-[64px] h-[92vh] '>
@@ -15,15 +18,15 @@ const SideNavbar = () => {
             <HomeFilledIcon sx={{color:"white"}}/>
             <div className='text-white'>Home</div>
         </div>
-        <div className='flex gap-4 px-4 py-2 items-center cursor-pointer
+        <Link to={`/users/${user.username}`} className='flex gap-4 px-4 py-2 items-center cursor-pointer
                          hover:bg-[#404040] rounded-[10px] border-white border-2'>
             <PersonIcon sx={{color:"white"}}/>
             <div className='text-white'>My Profile</div>
-        </div>
+        </Link>
         <div className='flex gap-4 px-4 py-2 items-center cursor-pointer
                          hover:bg-[#404040] rounded-[10px] border-white border-2'>
             <BrowseGalleryIcon sx={{color:"white"}}/>
-            <div className='text-white'>Watch History</div>
+            <Link to={'/history'} className='text-white'>Watch History</Link>
         </div>
         <div className='flex gap-4 px-4 py-2 items-center cursor-pointer
                          hover:bg-[#404040] rounded-[10px] border-white border-2'>

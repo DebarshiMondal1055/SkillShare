@@ -6,11 +6,23 @@ import { useParams } from 'react-router-dom';
 import { useCustomGetRequest } from '../../Hooks/customGetReactQuery';
 import axios from 'axios';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuthContext } from '../../Context/AuthenticationContext';
 const VideoPage = ({showSideNavbar}) => {
+    const {user}=useAuthContext();
     const queryClient=useQueryClient()  //initialise the client provided by QueryClientProvider
     const [commentDescription,setcommentDescription]=useState("")
     const {videoId}=useParams();
+    console.log(user)
 
+    useEffect(()=>{
+        ;(async()=>{
+            try {
+                const response=await axios.post(`/api/v1/users/v/${videoId}`)
+            } catch (error) {
+                console.error(error)
+            }
+        })()
+    },[])
     const {data,error,isLoading:loading}=useQuery({
         queryKey:['video',videoId],
         queryFn:async()=>{
@@ -48,7 +60,6 @@ const VideoPage = ({showSideNavbar}) => {
         try {
             const response=await axios.post(`/api/v1/comments/${videoId}`,
                 {content:commentDescription});
-            console.log(response.data.data)
             queryClient.invalidateQueries(['comments',videoId]);
             setcommentDescription("");
         } catch (error) {
@@ -72,6 +83,8 @@ const VideoPage = ({showSideNavbar}) => {
         try{
             const response =await axios.post(`/api/v1/likes/toggle/v/${videoId}`,{},{withCredentials:true});
             console.log(response.data.data);
+            const {isLiked,likesCount}=response.data.data;
+            queryClient.setQueryData(['video',videoId],(prev)=>({...prev,isLiked:isLiked,likesCount:likesCount}))
         }catch(error){
             console.error(error)
         }
@@ -126,9 +139,9 @@ const VideoPage = ({showSideNavbar}) => {
                     <div onClick={toggleLike}
                         className='flex hover:bg-gray-500 cursor-pointer gap-2 justify-center items-center px-[10px] py-[10px] box-border rounded-2xl bg-[#212121]'>
                         <div className=''>
-                            <ThumbUpOffAltIcon/>
+                            <ThumbUpOffAltIcon style={data?.isLiked?{color:"green"}:{color:"white"}}/>
                         </div>
-                        <div className='text-white'>
+                        <div className={(data?.isLiked)?"text-green-600":"text-white"}>
                             {data?.likesCount} Likes
                         </div>
                     </div>
@@ -164,7 +177,7 @@ const VideoPage = ({showSideNavbar}) => {
             <h1 className='text-2xl font-medium'>{commentsData?.comments.length} Comments</h1>
             <div className='flex gap-2 mt-[10px]'>
                 <img className='h-[42px] w-[42px] rounded-full' 
-                src={data?.owner.avatar} alt="" />
+                src={user?.avatar} alt="" />
             <div className='w-[80%] flex border-b-2  border-b-gray-300'>
                     <input  className='bg-black h-[42px] focus:outline-none w-full
                     border-none text-white text-[18px]'

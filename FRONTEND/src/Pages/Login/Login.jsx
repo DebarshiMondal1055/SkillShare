@@ -1,22 +1,45 @@
 import React, { useState } from 'react'
 import { Link ,useNavigate} from 'react-router-dom';
 import axios from 'axios'
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 const Login = () => {
     const [username,setUsername]=useState("");
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
     const navigate=useNavigate();
-    const loginHandler=()=>{
-        const data={username,email,password};
-        axios.post("/api/v1/users/login",data,{withCredentials:true}) //Credentials true ensures cookies are saved in the browser..
-        .then((response)=>{
-            if(response.status===201){
-                const username=response.data.data.user.username;
-                navigate(`/users/${username}`);
+    const queryClient=useQueryClient();
+    // const loginHandler=()=>{
+    //     const data={username,email,password};
+    //     axios.post("/api/v1/users/login",data,{withCredentials:true}) //Credentials true ensures cookies are saved in the browser..
+    //     .then((response)=>{
+    //         if(response.status===201){
+    //             const username=response.data.data.user.username;
+    //             navigate(`/users/${username}`);
+    //         }
+    //         console.log(response.data)
+    //     })
+    //     .catch((error)=>{console.log(error)})
+    // }
+
+    const loginMutation=useMutation({
+        mutationFn:async()=>{
+            try {
+                const data={username,email,password};
+                const response=await axios.post("/api/v1/users/login",data,{withCredentials:true});
+                return (response.status>=200 && response.status<300)? response.data.data:{};
+            } catch (error) {
+                console.error(error)        
             }
-            console.log(response.data)
-        })
-        .catch((error)=>{console.log(error)})
+
+        },
+        onSuccess:async(data)=>{
+            await queryClient.invalidateQueries(['currentUser']); 
+            navigate(`/users/${username}`);  
+        },
+    })
+
+    const loginHandler=()=>{
+        loginMutation.mutate();
     }
   return (
     <div className='flex w-full mt-[60px] justify-center items-center box-border h-[92vh] text-white bg-black '>
