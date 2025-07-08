@@ -17,7 +17,9 @@ const WatchHistoryPage = ({showSideNavbar}) => {
                 console.error(error)
             }
 
-        }
+        },
+        
+        refetchOnWindowFocus: false, 
     })
 
     if(isLoading){
@@ -56,9 +58,9 @@ const WatchHistoryPage = ({showSideNavbar}) => {
                 {formatDuration(video.duration)}
               </span>
             </Link>
-            <Link to={`/watch/${video._id}`} className="flex flex-col gap-1">
-              <h2 className="text-lg font-semibold line-clamp-2">{video.title}</h2>
-              <p className="text-sm text-gray-300 line-clamp-2">{video.description}</p>
+            <div className="flex flex-col gap-1">
+              <Link to={`/watch/${video._id}`} className="text-lg font-semibold line-clamp-2">{video.title}</Link>
+              <Link to={`/watch/${video._id}`} className="text-sm text-gray-300 line-clamp-2">{video.description}</Link>
               <div className="flex items-center gap-2">
                 <img
                   src={video.owner.avatar}
@@ -69,7 +71,7 @@ const WatchHistoryPage = ({showSideNavbar}) => {
               </div>
               <p className="text-sm text-gray-400">{formatViews(video.views)}</p>
               
-            </Link>
+            </div>
           </div>
         ))}
       </div>

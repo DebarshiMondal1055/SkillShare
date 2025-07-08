@@ -43,8 +43,6 @@ function App() {
       navigate("/login");
     }
   }, [isLoading, data, navigate]);
-
-  console.log(data);
   
   return (
     <AuthenticationContextProvider value={{user:data}}>

@@ -12,7 +12,6 @@ const VideoPage = ({showSideNavbar}) => {
     const queryClient=useQueryClient()  //initialise the client provided by QueryClientProvider
     const [commentDescription,setcommentDescription]=useState("")
     const {videoId}=useParams();
-    console.log(user)
 
     useEffect(()=>{
         ;(async()=>{

@@ -18,7 +18,7 @@ const SideNavbar = () => {
             <HomeFilledIcon sx={{color:"white"}}/>
             <div className='text-white'>Home</div>
         </div>
-        <Link to={`/users/${user.username}`} className='flex gap-4 px-4 py-2 items-center cursor-pointer
+        <Link to={`/users/${user?.username}`} className='flex gap-4 px-4 py-2 items-center cursor-pointer
                          hover:bg-[#404040] rounded-[10px] border-white border-2'>
             <PersonIcon sx={{color:"white"}}/>
             <div className='text-white'>My Profile</div>
