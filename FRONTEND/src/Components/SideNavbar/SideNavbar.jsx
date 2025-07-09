@@ -7,17 +7,35 @@ import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import PermMediaIcon from '@mui/icons-material/PermMedia';
 import { Link } from 'react-router-dom';
 import { useAuthContext } from '../../Context/AuthenticationContext';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 const SideNavbar = () => {
+
   const {user}=useAuthContext();
+  const {data,isLoading,isError,error}=useQuery({
+    queryKey:['subscribedTo'],
+    queryFn:async()=>{
+        try {
+            const response=await axios.get(`/api/v1/subscriptions/users/${user._id}`)
+            return (response.status===200)?response.data.data:[]
+        } catch (error) {
+          console.error(error)
+          return [];
+        }
+    },
+    enabled: !!user?._id,
+  })
+  console.log(data);
+
   return (
     <div className='flex flex-col gap-2 px-[14px] fixed overflow-y-auto box-border 
                 w-[280px] bg-black py-4 top-[64px] h-[92vh] '>
       <div className='flex flex-col gap-2.5 border-b-3 border-gray-600 pb-3'>
-        <div className='flex gap-4 px-4 py-2 items-center cursor-pointer
+        <Link to={"/home"} className='flex gap-4 px-4 py-2 items-center cursor-pointer
                          hover:bg-[#404040] border-white border-2 rounded-[10px]'>
             <HomeFilledIcon sx={{color:"white"}}/>
             <div className='text-white'>Home</div>
-        </div>
+        </Link>
         <Link to={`/users/${user?.username}`} className='flex gap-4 px-4 py-2 items-center cursor-pointer
                          hover:bg-[#404040] rounded-[10px] border-white border-2'>
             <PersonIcon sx={{color:"white"}}/>
@@ -54,46 +72,28 @@ const SideNavbar = () => {
         <div className='flex gap-4 px-4 py-2 items-center'>
             <div className='text-white font-bold'>Subsriptions</div>
         </div>
-        <div className='flex gap-4 px-4 py-2 items-center cursor-pointer
+        {!isLoading && !isError && Array.isArray(data?.subscribedChannels) && data?.subscribedChannels.length > 0 ? (
+          data.subscribedChannels?.map((subscription, index) => (
+            <Link to={`/users/${subscription.subscribedChannelInfo.username}`}
+              key={index}
+              className='flex gap-4 px-4 py-2 items-center cursor-pointer
                         bg-[#60637c] hover:bg-[#2b3434] rounded-[10px] border-white border-2'>
-            <img src="https://res.cloudinary.com/deeccmrzc/image/upload/v1749487214/gh5gpj14rqpugcvsgnu3.jpg" 
-            alt="" className='w-[25px] h-[25px] rounded-full' 
+              <img
+                src={subscription.subscribedChannelInfo.avatar}
+                alt=""
+                className='w-[25px] h-[25px] rounded-full'
+              />
+              <div className='text-white'>{subscription.subscribedChannelInfo.username}</div>
+            </Link>
+          ))
+        ) : (
+          <div className='text-gray-400 px-4'>No Subscriptions</div>
+        )}
+        
+        
+        
 
-            />
-            <div className='text-white'>Martin Garrix</div>
-        </div>        
-        <div className='flex gap-4 px-4 py-2 items-center cursor-pointer
-                        bg-[#60637c] hover:bg-[#2b3434] rounded-[10px] border-white border-2'>
-            <img src="https://res.cloudinary.com/deeccmrzc/image/upload/v1749487214/gh5gpj14rqpugcvsgnu3.jpg" 
-            alt="" className='w-[25px] h-[25px] rounded-full' 
-
-            />
-            <div className='text-white'>Martin Garrix</div>
-        </div>        
-        <div className='flex gap-4 px-4 py-2 items-center cursor-pointer
-                        bg-[#60637c] hover:bg-[#2b3434] rounded-[10px] border-white border-2'>
-            <img src="https://res.cloudinary.com/deeccmrzc/image/upload/v1749487214/gh5gpj14rqpugcvsgnu3.jpg" 
-            alt="" className='w-[25px] h-[25px] rounded-full' 
-
-            />
-            <div className='text-white'>Martin Garrix</div>
-        </div>        
-        <div className='flex gap-4 px-4 py-2 items-center cursor-pointer
-                        bg-[#60637c] hover:bg-[#2b3434] rounded-[10px] border-white border-2'>
-            <img src="https://res.cloudinary.com/deeccmrzc/image/upload/v1749487214/gh5gpj14rqpugcvsgnu3.jpg" 
-            alt="" className='w-[25px] h-[25px] rounded-full' 
-
-            />
-            <div className='text-white'>Martin Garrix</div>
-        </div>        
-        <div className='flex gap-4 px-4 py-2 items-center cursor-pointer
-                        bg-[#60637c] hover:bg-[#2b3434] rounded-[10px] border-white border-2'>
-            <img src="https://res.cloudinary.com/deeccmrzc/image/upload/v1749487214/gh5gpj14rqpugcvsgnu3.jpg" 
-            alt="" className='w-[25px] h-[25px] rounded-full' 
-
-            />
-            <div className='text-white'>Martin Garrix</div>
-        </div>        
+             
 
       </div>
 

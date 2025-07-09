@@ -14,6 +14,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import WatchHistory from './Pages/WatchHistory/WatchHistory.jsx'
 import Subscribers from './Pages/Subscribers/Subscribers.jsx'
 import VideoLike from './Pages/VideoLikes/VideoLike.jsx'
+import SearchResults from './Pages/SearchResults/SearchResults.jsx'
 const router=createBrowserRouter([
   {
     path:'/',
@@ -54,6 +55,10 @@ const router=createBrowserRouter([
       {
         path:'likedVideos',
         element:<VideoLike/>
+      },
+      {
+        path:'/results',
+        element:<SearchResults/>
       }
     ]
   }

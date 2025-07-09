@@ -81,13 +81,24 @@ const VideoPage = ({showSideNavbar}) => {
     const toggleLike=async()=>{
         try{
             const response =await axios.post(`/api/v1/likes/toggle/v/${videoId}`,{},{withCredentials:true});
-            console.log(response.data.data);
             const {isLiked,likesCount}=response.data.data;
             queryClient.setQueryData(['video',videoId],(prev)=>({...prev,isLiked:isLiked,likesCount:likesCount}))
         }catch(error){
             console.error(error)
         }
     }
+
+    const {data:suggestions,isLoading,isError:suggestionIsError,error:suggestionError}=useQuery({
+        queryKey:['suggestedVideos',videoId],
+        queryFn: async()=>{
+            try {
+                const response =await axios.get()
+            } catch (error) {
+                
+            }
+        }
+    })
+
     
     
     const days=Math.floor((Date.now()-new Date(data?.createdAt).getTime())/86400000);
