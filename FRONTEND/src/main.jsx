@@ -15,6 +15,8 @@ import WatchHistory from './Pages/WatchHistory/WatchHistory.jsx'
 import Subscribers from './Pages/Subscribers/Subscribers.jsx'
 import VideoLike from './Pages/VideoLikes/VideoLike.jsx'
 import SearchResults from './Pages/SearchResults/SearchResults.jsx'
+import UserTweet from './Pages/UserTweet/UserTweet.jsx'
+import UserCourses from './Pages/UserCourses/UserCourses.jsx'
 const router=createBrowserRouter([
   {
     path:'/',
@@ -30,7 +32,7 @@ const router=createBrowserRouter([
       },
       {
         path:'users/:username',
-        element:<UserProfile/>
+        element:<UserProfile/>,
       },
       {
         path:':userId/upload',
@@ -59,7 +61,15 @@ const router=createBrowserRouter([
       {
         path:'/results',
         element:<SearchResults/>
-      }
+      },
+      {
+        path:'users/:username/tweets',
+        element:<UserTweet/>
+      },
+      {
+        path:'users/:username/courses',
+        element:<UserCourses/>
+      },
     ]
   }
 ])

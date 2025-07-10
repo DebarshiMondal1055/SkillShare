@@ -7,7 +7,44 @@ import { useCustomGetRequest } from '../../Hooks/customGetReactQuery';
 import axios from 'axios';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthContext } from '../../Context/AuthenticationContext';
+
+const formatRelativeTime = (createdAt) => {
+  const now = new Date();
+  const date = new Date(createdAt);
+  const diffInSeconds = Math.floor((now - date) / 1000);
+  const secondsInMinute = 60;
+  const secondsInHour = 3600;
+  const secondsInDay = 86400;
+  const secondsInWeek = 604800;
+  const secondsInMonth = 2592000; // Approx 30 days
+  const secondsInYear = 31536000; // Approx 365 days
+
+  if (diffInSeconds < secondsInMinute) return `${diffInSeconds} seconds ago`;
+  if (diffInSeconds < secondsInHour) {
+    const minutes = Math.floor(diffInSeconds / secondsInMinute);
+    return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+  }
+  if (diffInSeconds < secondsInDay) {
+    const hours = Math.floor(diffInSeconds / secondsInHour);
+    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  }
+  if (diffInSeconds < secondsInWeek) {
+    const days = Math.floor(diffInSeconds / secondsInDay);
+    return `${days} day${days > 1 ? 's' : ''} ago`;
+  }
+  if (diffInSeconds < secondsInMonth) {
+    const weeks = Math.floor(diffInSeconds / secondsInWeek);
+    return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+  }
+  if (diffInSeconds < secondsInYear) {
+    const months = Math.floor(diffInSeconds / secondsInMonth);
+    return `${months} month${months > 1 ? 's' : ''} ago`;
+  }
+  const years = Math.floor(diffInSeconds / secondsInYear);
+  return `${years} year${years > 1 ? 's' : ''} ago`;
+};
 const VideoPage = ({showSideNavbar}) => {
+
     const {user}=useAuthContext();
     const queryClient=useQueryClient()  //initialise the client provided by QueryClientProvider
     const [commentDescription,setcommentDescription]=useState("")
@@ -39,20 +76,7 @@ const VideoPage = ({showSideNavbar}) => {
         }
     })
     
-    if (loading) {
-            return (
-                <div className="w-full h-screen flex justify-center items-center bg-black text-white text-2xl">
-                Loading video...
-                </div>
-            );
-        }
-    if(commentsLoading){
-            return (
-                <div className="w-full h-screen flex justify-center items-center bg-black text-white text-2xl">
-                Comments Loading ...
-                </div>
-            );     
-    }
+
     
     
     const addCommentHandler=async()=>{
@@ -89,17 +113,33 @@ const VideoPage = ({showSideNavbar}) => {
     }
 
     const {data:suggestions,isLoading,isError:suggestionIsError,error:suggestionError}=useQuery({
-        queryKey:['suggestedVideos',videoId],
+        queryKey:['suggestedVideos',videoId,data?.title],
+        enabled: !!data?.title,
         queryFn: async()=>{
             try {
-                const response =await axios.get()
+                const response =await axios.get(`/api/v1/videos/get-all-videos?query=${data?.title}`)
+                return response.status===200?response.data.data:[];
             } catch (error) {
-                
+                console.error(error);
+                return [];
             }
-        }
+        },
     })
 
-    
+        if (loading) {
+            return (
+                <div className="w-full h-screen flex justify-center items-center bg-black text-white text-2xl">
+                Loading video...
+                </div>
+            );
+        }
+    if(commentsLoading){
+            return (
+                <div className="w-full h-screen flex justify-center items-center bg-black text-white text-2xl">
+                Comments Loading ...
+                </div>
+            );     
+    }
     
     const days=Math.floor((Date.now()-new Date(data?.createdAt).getTime())/86400000);
     const years=Math.floor(days/365);
@@ -236,186 +276,25 @@ const VideoPage = ({showSideNavbar}) => {
       </div>
 
             <div className='w-[100%] max-w-[420px] py-[10px] px-[15px] flex flex-col gap-5 text-white'>
-                <div className='flex cursor-pointer gap-2 justify-center items-center'>
+                {suggestions?.map((suggestion,index)=>(
+                    <div key={index} className='flex cursor-pointer gap-2 justify-center items-center'>
                     <div className='w-[168px] h-[94px]'>
                         <img className='w-full h-full rounded-xl'
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143922/o0wkwjkggs0ywsk0iund.jpg" alt="" />
+                        src={suggestion.thumbnail} alt="" />
                     </div>
                     <div className='flex flex-col text-white gap-[3px]'>
                         <div className='mb-[5px] font-bold '>
-                            Suggestion Video Example
+                            {suggestion.title}
                         </div>
                         <div className='text-gray-400'>
-                            Tangerine
+                            {suggestion.owner.username}
                         </div>
-                        <div className='text-gray-400 font-light'>30 Views ~ 1 day ago</div>
+                        <div className='text-gray-400 font-light'>{suggestion.views} Views ~ {formatRelativeTime(suggestion.createdAt)} </div>
                     </div>
                 </div>  
-                <div className='flex cursor-pointer gap-2 justify-center items-center'>
-                    <div className='w-[168px] h-[94px]'>
-                        <img className='w-full h-full rounded-xl'
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143922/o0wkwjkggs0ywsk0iund.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col text-white gap-[3px]'>
-                        <div className='mb-[5px] font-bold '>
-                            Suggestion Video Example
-                        </div>
-                        <div className='text-gray-400'>
-                            Tangerine
-                        </div>
-                        <div className='text-gray-400 font-light'>30 Views ~ 1 day ago</div>
-                    </div>
-                </div>  
-                <div className='flex cursor-pointer gap-2 justify-center items-center'>
-                    <div className='w-[168px] h-[94px]'>
-                        <img className='w-full h-full rounded-xl'
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143922/o0wkwjkggs0ywsk0iund.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col text-white gap-[3px]'>
-                        <div className='mb-[5px] font-bold '>
-                            Suggestion Video Example
-                        </div>
-                        <div className='text-gray-400'>
-                            Tangerine
-                        </div>
-                        <div className='text-gray-400 font-light'>30 Views ~ 1 day ago</div>
-                    </div>
-                </div>  
-                <div className='flex cursor-pointer gap-2 justify-center items-center'>
-                    <div className='w-[168px] h-[94px]'>
-                        <img className='w-full h-full rounded-xl'
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143922/o0wkwjkggs0ywsk0iund.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col text-white gap-[3px]'>
-                        <div className='mb-[5px] font-bold '>
-                            Suggestion Video Example
-                        </div>
-                        <div className='text-gray-400'>
-                            Tangerine
-                        </div>
-                        <div className='text-gray-400 font-light'>30 Views ~ 1 day ago</div>
-                    </div>
-                </div>  
-                <div className='flex cursor-pointer gap-2 justify-center items-center'>
-                    <div className='w-[168px] h-[94px]'>
-                        <img className='w-full h-full rounded-xl'
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143922/o0wkwjkggs0ywsk0iund.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col text-white gap-[3px]'>
-                        <div className='mb-[5px] font-bold '>
-                            Suggestion Video Example
-                        </div>
-                        <div className='text-gray-400'>
-                            Tangerine
-                        </div>
-                        <div className='text-gray-400 font-light'>30 Views ~ 1 day ago</div>
-                    </div>
-                </div>  
-                <div className='flex cursor-pointer gap-2 justify-center items-center'>
-                    <div className='w-[168px] h-[94px]'>
-                        <img className='w-full h-full rounded-xl'
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143922/o0wkwjkggs0ywsk0iund.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col text-white gap-[3px]'>
-                        <div className='mb-[5px] font-bold '>
-                            Suggestion Video Example
-                        </div>
-                        <div className='text-gray-400'>
-                            Tangerine
-                        </div>
-                        <div className='text-gray-400 font-light'>30 Views ~ 1 day ago</div>
-                    </div>
-                </div>  
-                <div className='flex cursor-pointer gap-2 justify-center items-center'>
-                    <div className='w-[168px] h-[94px]'>
-                        <img className='w-full h-full rounded-xl'
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143922/o0wkwjkggs0ywsk0iund.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col text-white gap-[3px]'>
-                        <div className='mb-[5px] font-bold '>
-                            Suggestion Video Example
-                        </div>
-                        <div className='text-gray-400'>
-                            Tangerine
-                        </div>
-                        <div className='text-gray-400 font-light'>30 Views ~ 1 day ago</div>
-                    </div>
-                </div>  
-                <div className='flex cursor-pointer gap-2 justify-center items-center'>
-                    <div className='w-[168px] h-[94px]'>
-                        <img className='w-full h-full rounded-xl'
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143922/o0wkwjkggs0ywsk0iund.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col text-white gap-[3px]'>
-                        <div className='mb-[5px] font-bold '>
-                            Suggestion Video Example
-                        </div>
-                        <div className='text-gray-400'>
-                            Tangerine
-                        </div>
-                        <div className='text-gray-400 font-light'>30 Views ~ 1 day ago</div>
-                    </div>
-                </div>  
-                <div className='flex cursor-pointer gap-2 justify-center items-center'>
-                    <div className='w-[168px] h-[94px]'>
-                        <img className='w-full h-full rounded-xl'
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143922/o0wkwjkggs0ywsk0iund.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col text-white gap-[3px]'>
-                        <div className='mb-[5px] font-bold '>
-                            Suggestion Video Example
-                        </div>
-                        <div className='text-gray-400'>
-                            Tangerine
-                        </div>
-                        <div className='text-gray-400 font-light'>30 Views ~ 1 day ago</div>
-                    </div>
-                </div>  
-                <div className='flex cursor-pointer gap-2 justify-center items-center'>
-                    <div className='w-[168px] h-[94px]'>
-                        <img className='w-full h-full rounded-xl'
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143922/o0wkwjkggs0ywsk0iund.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col text-white gap-[3px]'>
-                        <div className='mb-[5px] font-bold '>
-                            Suggestion Video Example
-                        </div>
-                        <div className='text-gray-400'>
-                            Tangerine
-                        </div>
-                        <div className='text-gray-400 font-light'>30 Views ~ 1 day ago</div>
-                    </div>
-                </div>  
-                <div className='flex cursor-pointer gap-2 justify-center items-center'>
-                    <div className='w-[168px] h-[94px]'>
-                        <img className='w-full h-full rounded-xl'
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143922/o0wkwjkggs0ywsk0iund.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col text-white gap-[3px]'>
-                        <div className='mb-[5px] font-bold '>
-                            Suggestion Video Example
-                        </div>
-                        <div className='text-gray-400'>
-                            Tangerine
-                        </div>
-                        <div className='text-gray-400 font-light'>30 Views ~ 1 day ago</div>
-                    </div>
-                </div>  
-                <div className='flex cursor-pointer gap-2 justify-center items-center'>
-                    <div className='w-[168px] h-[94px]'>
-                        <img className='w-full h-full rounded-xl'
-                        src="https://res.cloudinary.com/deeccmrzc/image/upload/v1750143922/o0wkwjkggs0ywsk0iund.jpg" alt="" />
-                    </div>
-                    <div className='flex flex-col text-white gap-[3px]'>
-                        <div className='mb-[5px] font-bold '>
-                            Suggestion Video Example
-                        </div>
-                        <div className='text-gray-400'>
-                            Tangerine
-                        </div>
-                        <div className='text-gray-400 font-light'>30 Views ~ 1 day ago</div>
-                    </div>
-                </div>  
+                ))}
+
+  
             </div>  
         </div>
     </>

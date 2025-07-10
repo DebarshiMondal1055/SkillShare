@@ -1,12 +1,13 @@
+import { useQuery } from '@tanstack/react-query'
 import React from 'react'
-import { useState } from 'react';
-import { useEffect } from 'react'
-import axios from 'axios'
-import { Link, useParams } from 'react-router-dom'
-const UserProfilePage = ({showSideNavbar}) => {
+import { useAuthContext } from '../../Context/AuthenticationContext'
+import axios from 'axios';
+import { useParams ,Link } from 'react-router-dom';
+import { useState,useEffect } from 'react';
+const UserTweetPage = ({showSideNavbar}) => {
+    const {user}=useAuthContext();
     const {username}=useParams();
     const [userData,setUserData]=useState({});
-    const [videos,setVideos]=useState([]);
     useEffect(() => {
         const fetchUserData = async () => {
         try {
@@ -34,30 +35,28 @@ const UserProfilePage = ({showSideNavbar}) => {
     }
     
 
-
-    useEffect(()=>{
-        const fetchVideoDetails=async()=>{
-            try {
-                if(!_id) return;
-                const response=await axios.get(`/api/v1/videos/${_id}`,
-                    {withCredentials:true})
-                
-                setVideos(response.data.data)
-            } catch (error) {
-                console.error(error);
-            }
+    const {data:tweets,isLoading,isError,error}=useQuery({
+        queryKey:['tweets',_id],
+        queryFn:async()=>{
+        try {
+            const response=await axios.get(`/api/v1/tweets/users/${_id}`);
+            return response.status===200?response.data.data:[]
+        } catch (error) {
+            console.error(error);
+            return [];
         }
-        fetchVideoDetails()
-    },[_id])
-
-    
+        },
+        staleTime:Infinity,
+        enabled:!!_id
+    })
+  
     return (
     <div className={`flex flex-col gap-4 ${showSideNavbar ? 'ml-[280px]' : 'ml-0'} bg-black py-4 px-4 text-white min-h-[92vh] w-full overflow-x-hidden `}>
         <div className='w-full flex justify-center h-[300px] mt-2 '>
             <div className='w-[70%] h-full'>
                 <img className='w-full h-full object-cover rounded-2xl ' 
                     src={coverImage} alt="" />
-            </div>
+        </div>
         </div>
         <div className='w-full flex justify-center'>
         <div className='w-[70%] flex px-4 py-6 gap-5 items-center  border-b-gray-300 border-b-2 '>
@@ -83,41 +82,51 @@ const UserProfilePage = ({showSideNavbar}) => {
         </div>
         <div className='w-full flex justify-center text-white '>
             <div className='w-[70%] flex  justify-between'>
-                <div className='bg-gray-600 hover:border-b-2 hover:border-b-gray-400 px-4 py-2 w-[300px] text-lg flex justify-center items-center '>
+                <Link to={`/users/${username}`} className=' hover:border-b-2 hover:border-b-gray-400 px-4 py-2 w-[300px] text-lg flex justify-center items-center cursor-pointer'>
                     Videos
-                </div >
-                <Link to={`/users/${username}/courses`} className='hover:border-b-2 hover:border-b-gray-400 px-4 py-2 w-[300px] text-lg flex justify-center items-center cursor-pointer'>
-                    Courses
                 </Link >
-                <Link to={`/users/${username}/tweets`} className='hover:border-b-2 hover:border-b-gray-400 cursor-pointer px-4 py-2 w-[300px] text-lg flex justify-center items-center'>
+                <div className='hover:border-b-2 hover:border-b-gray-400 px-4 py-2 w-[300px] text-lg flex justify-center items-center cursor-pointer'>
+                    Playlists
+                </div >
+                <div className='bg-gray-600 hover:border-b-2 hover:border-b-gray-400  px-4 py-2 w-[300px] text-lg flex justify-center items-center'>
                     Tweets
-                </Link>
+                </div>
             </div>
-        </div>
-        <div className=' mt-2 w-full flex justify-center '>
+        </div>       
+            <div className=' mt-2 w-full flex justify-center '>
             <div className=' flex flex-wrap gap-[20px]   w-[70%] '>
-                {videos.map((video,index)=>{
-                    const days=Math.floor((Date.now()-new Date(video.createdAt).getTime())/86400000);
-                    const years=Math.floor(days/365);
-                    return <Link key={index} to={`/watch/${video._id}`} className=' flex flex-col gap-2 w-[240px]  cursor-pointer text-white'>
-                        <div className='w-full h-[150px]'>
-                            <img className='w-full h-full rounded-lg '
-                            src={video.thumbnail} alt="" />
-                        </div>
-                        <div className='flex flex-col gap-1 w-full'>
-                            <p className='font-medium text-md'>{video.title}</p>
-                            <div className='text-gray-400 font-light'>
-                                {video.views} views ~ {years>0?years:days} {years>0?"years":"days"} ago
+                    {tweets?.map((tweet) => (
+                        <div
+                        key={tweet._id}
+                        className="border w-full border-gray-800 rounded-lg p-4 hover:bg-gray-900 transition-colors"
+                        >
+                        <div className="flex items-start gap-3">
+                            <img
+                            src={tweet.owner.avatar}
+                            alt={`${tweet.owner.username}'s avatar`}
+                            className="w-12 h-12 rounded-full object-cover"
+                            />
+                            <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                                <span className="font-bold">{tweet.owner.fullname}</span>
+                                <span className="text-gray-500">@{tweet.owner.username}</span>
+                                <span className="text-gray-500">·</span>
+                                <span className="text-gray-500">
+                                {new Date(tweet.createdAt).toLocaleDateString()}
+                                </span>
+                            </div>
+                            <p className="mt-1 text-gray-200">{tweet.content}</p>
                             </div>
                         </div>
-                    </Link>}
-                )}
-                
+                        </div>
+                    ))}       
 
         </div>
         </div>
+          
+
     </div>
   )
 }
 
-export default UserProfilePage
+export default UserTweetPage

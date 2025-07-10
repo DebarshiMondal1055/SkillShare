@@ -55,7 +55,6 @@ const SearchResultsPage = ({showSideNavbar}) => {
         queryFn:async()=>{
             try {
                 const response=await axios.get(`/api/v1/videos/get-all-videos?query=${query}`)
-                console.log(response)
                 return (response.status===200)?response.data.data:[];
             } catch (error) {
                 console.error(error);
@@ -64,9 +63,10 @@ const SearchResultsPage = ({showSideNavbar}) => {
         },
         staleTime:Infinity
     })
-    console.log(data);
     if(isLoading){
-        return <div className="text-white text-lg">Searching</div>
+      <div className="w-full h-screen flex justify-center items-center bg-black text-white text-2xl">
+        Searching...
+      </div>
     }
     {!isLoading && data?.length === 0 && (
         <div className="text-white text-lg">No results found for "{query}"</div>

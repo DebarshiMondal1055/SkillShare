@@ -47,8 +47,7 @@ function App() {
   
   return (
     <AuthenticationContextProvider value={{user:data}}>
-      <Navbar toggleSideNavbar={toggleSideNavbar}/>
-      {/* <Subscribers showSideNavbar={showSideNavbar}/> */}
+      <Navbar toggleSideNavbar={toggleSideNavbar}/> 
       <Outlet context={{showSideNavbar}}/>
     </AuthenticationContextProvider>
   )

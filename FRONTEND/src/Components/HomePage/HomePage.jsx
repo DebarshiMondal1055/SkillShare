@@ -11,6 +11,7 @@ const HomePage = ({showSideNavbar}) => {
   "Biology",
   "Geography",
   "NEET",
+  "Coding"
 ];
 
   const [category,setCategory]=useState("");
@@ -29,8 +30,6 @@ const HomePage = ({showSideNavbar}) => {
     staleTime:Infinity,
     refetchOnWindowFocus:false
   })
-
-  console.log(data);
 
   const handleHomePageVideos=(skill)=>{
       setCategory(skill);

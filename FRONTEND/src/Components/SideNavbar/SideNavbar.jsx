@@ -25,7 +25,6 @@ const SideNavbar = () => {
     },
     enabled: !!user?._id,
   })
-  console.log(data);
 
   return (
     <div className='flex flex-col gap-2 px-[14px] fixed overflow-y-auto box-border 
