@@ -17,6 +17,7 @@ import VideoLike from './Pages/VideoLikes/VideoLike.jsx'
 import SearchResults from './Pages/SearchResults/SearchResults.jsx'
 import UserTweet from './Pages/UserTweet/UserTweet.jsx'
 import UserCourses from './Pages/UserCourses/UserCourses.jsx'
+import UserDashboard from './Pages/UserDashboard/UserDashboard.jsx'
 const router=createBrowserRouter([
   {
     path:'/',
@@ -70,6 +71,10 @@ const router=createBrowserRouter([
         path:'users/:username/courses',
         element:<UserCourses/>
       },
+      {
+        path:'channel/:userId',
+        element:<UserDashboard/>
+      }
     ]
   }
 ])

@@ -85,9 +85,9 @@ const UserTweetPage = ({showSideNavbar}) => {
                 <Link to={`/users/${username}`} className=' hover:border-b-2 hover:border-b-gray-400 px-4 py-2 w-[300px] text-lg flex justify-center items-center cursor-pointer'>
                     Videos
                 </Link >
-                <div className='hover:border-b-2 hover:border-b-gray-400 px-4 py-2 w-[300px] text-lg flex justify-center items-center cursor-pointer'>
-                    Playlists
-                </div >
+                <Link to={`/users/${username}/courses`} className='hover:border-b-2 hover:border-b-gray-400 px-4 py-2 w-[300px] text-lg flex justify-center items-center cursor-pointer'>
+                    Courses
+                </Link >
                 <div className='bg-gray-600 hover:border-b-2 hover:border-b-gray-400  px-4 py-2 w-[300px] text-lg flex justify-center items-center'>
                     Tweets
                 </div>

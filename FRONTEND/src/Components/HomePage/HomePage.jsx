@@ -27,7 +27,6 @@ const HomePage = ({showSideNavbar}) => {
         return [];
       }
     },
-    staleTime:Infinity,
     refetchOnWindowFocus:false
   })
 
